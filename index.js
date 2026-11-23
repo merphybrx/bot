@@ -1,49 +1,32 @@
 require("dotenv").config();
 
+const fs = require('node:fs')
+const path = require('node:path')
+
 const {
   Client,
   GatewayIntentBits,
-  Events,
-  MessageFlags
+  Collection,
 } = require("discord.js");
 
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds]
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers],
 });
 
 const guildID = process.env.GUILD_ID
 
-client.once(Events.ClientReady, async () => {
+client.commands = new Collection()
 
-});
+const commandsPath = path.join(__dirname, 'commands');
+for (const file of fs.readdirSync(commandsPath).filter(f => f.endsWith('.js'))) {
+  const command = require(path.join(commandsPath, file));
+  client.commands.set(command.data.name, command);
+}
 
-client.on(Events.InteractionCreate, async (interaction) => {
-  if (!interaction.isChatInputCommand()) return;
-
-  if (interaction.commandName === "ping") {
-    await interaction.reply("pong");
-  }
-
-  if (interaction.commandName === "ban") {
-    const target = interaction.options.getMember('member');
-    
-    if (!target) {
-      return interaction.reply({
-        content: 'Member not found', flags: MessageFlags.Ephemeral
-      });
-    }
-
-    if (!target.bannable) {
-      return interaction.reply({
-        content: "Member can't be banned", flags: MessageFlags.Ephemeral
-      });
-    }
-
-    await target.ban();
-    await interaction.reply({
-      content: '${target.user.tag} banned.', flags: MessageFlags.Ephemeral
-    });
-  }
-});
+const eventsPath = path.join(__dirname, 'events');
+for (const file of fs.readdirSync(eventsPath).filter(f => f.endsWith('.js'))) {
+  const event = require(path.join(eventsPath, file));
+  client.on(event.name, (...args) => event.execute(...args, client));
+}
 
 client.login(process.env.DISCORD_TOKEN);

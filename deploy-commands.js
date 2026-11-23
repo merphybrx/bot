@@ -1,33 +1,23 @@
 require('dotenv').config();
 
+const fs = require('node:fs');
+const path = require('node:path');
+
 const {
   REST,
   Routes,
-  SlashCommandBuilder,
-  PermissionFlagsBits
 } = require('discord.js');
 
-const commands = [
-  new SlashCommandBuilder()
-    .setName('ping')
-    .setDescription('bot check'),
-
-  new SlashCommandBuilder()
-    .setName('ban')
-    .setDescription('bans')
-    .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers)
-    .addUserOption(o => o.setName('member').setDescription('user to ban').setRequired(true)),
-].map(command => command.toJSON());
+const commands = fs
+  .readdirSync(path.join(__dirname, 'commands'))
+  .filter(f => f.endsWith('.js'))
+  .map(f => require(path.join(__dirname, 'commands', f)).data.toJSON());
 
 const rest = new REST().setToken(process.env.DISCORD_TOKEN);
 
 (async () => {
-  try {
-    await rest.put(
-      Routes.applicationGuildCommands(process.env.APP_ID, process.env.GUILD_ID),
-      { body: commands },
-    );
-  } catch (error) {
-    console.error(error);
-  }
-})();
+  await rest.put(
+    Routes.applicationGuildCommands(process.env.APP_ID, process.env.HUILD_ID),
+    { body: commands },
+  );
+});
