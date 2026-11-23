@@ -28,7 +28,7 @@ module.exports = {
 
     await target.ban();
     await interaction.reply({
-      content: '${target.user.tag} banned.', flags: MessageFlags.Ephemeral
+      content: '${target.user.tag} banned', flags: MessageFlags.Ephemeral
     });
   },
 };

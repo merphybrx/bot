@@ -13,11 +13,13 @@ const commands = fs
   .filter(f => f.endsWith('.js'))
   .map(f => require(path.join(__dirname, 'commands', f)).data.toJSON());
 
+  
+
 const rest = new REST().setToken(process.env.DISCORD_TOKEN);
 
 (async () => {
   await rest.put(
-    Routes.applicationGuildCommands(process.env.APP_ID, process.env.HUILD_ID),
+    Routes.applicationCommands(process.env.APP_ID),
     { body: commands },
   );
 });
