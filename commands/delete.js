@@ -28,7 +28,7 @@ module.exports = {
       });
     }
 
-    if (!interaction.appPermission?.has(
+    if (!interaction.appPermissions?.has(
       PermissionFlagsBits.ManageMessages
     )) {
       return interaction.reply({
@@ -38,6 +38,7 @@ module.exports = {
     }
 
     await interaction.deferReply({
+      content: 'deleted',
       flags: MessageFlags.Ephemeral
     });
 
@@ -46,8 +47,16 @@ module.exports = {
         amount,
         true
       );
+
+      await interaction.editReply({
+        content: 'deleted'
+      });
     } catch (error) {
       console.error(error);
+
+      await interaction.editReply({
+        content: 'failed'
+      });
     }
   },
 };
