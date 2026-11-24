@@ -1,8 +1,12 @@
 const {
   PermissionFlagsBits,
   MessageFlags,
-  SlashCommandBuilder
+  SlashCommandBuilder,
 } = require("discord.js");
+
+const { errorEmbed } = require('../utils/errorEmbed');
+
+const errorTitle = 'Failed to Delete'
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -23,8 +27,10 @@ module.exports = {
 
     if (!interaction.channel?.bulkDelete) {
       return interaction.reply({
-        content: 'Messages cant be deleted here',
-        flags: MessageFlags.Ephemeral
+        components: [
+          errorEmbed(errorTitle, "Messages cant be deleted here")
+        ],
+        flags: MessageFlags.IsComponentsV2
       });
     }
 
@@ -32,8 +38,10 @@ module.exports = {
       PermissionFlagsBits.ManageMessages
     )) {
       return interaction.reply({
-        content: 'Not enough perms',
-        flags: MessageFlags.Ephemeral
+        components: [
+          errorEmbed(errorTitle, 'Not enough perms')
+        ],
+        flags: MessageFlags.IsComponentsV2
       });
     }
 
@@ -55,7 +63,10 @@ module.exports = {
       console.error(error);
 
       await interaction.editReply({
-        content: 'failed'
+        components: [
+          errorEmbed(errorTitle, 'Failed')
+        ],
+        flags: MessageFlags.IsComponentsV2
       });
     }
   },

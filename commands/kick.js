@@ -1,8 +1,12 @@
 const {
   PermissionFlagsBits,
   MessageFlags,
-  SlashCommandBuilder
+  SlashCommandBuilder,
 } = require("discord.js");
+
+const { errorEmbed } = require('../utils/errorEmbed');
+
+const errorTitle = 'Failed to Kick'
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -16,13 +20,19 @@ module.exports = {
     
     if (!target) {
       return interaction.reply({
-        content: 'Member not found', flags: MessageFlags.Ephemeral
+        components: [
+          errorEmbed(errorTitle, 'Member not found')
+        ],
+        flags: MessageFlags.IsComponentsV2
       });
     }
 
     if (!target.kickable) {
       return interaction.reply({
-        content: "Member can't be kicked", flags: MessageFlags.Ephemeral
+        components: [
+          errorEmbed(errorTitle, "Member can't be kicked")
+        ],
+        flags: MessageFlags.IsComponentsV2
       });
     }
 

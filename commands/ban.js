@@ -1,8 +1,12 @@
 const {
   PermissionFlagsBits,
   MessageFlags,
-  SlashCommandBuilder
+  SlashCommandBuilder,
 } = require("discord.js");
+
+const { errorEmbed } = require('../utils/errorEmbed');
+
+const errorTitle = 'Failed to Ban'
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -16,13 +20,19 @@ module.exports = {
     
     if (!target) {
       return interaction.reply({
-        content: 'Member not found', flags: MessageFlags.Ephemeral
+        components: [
+          errorEmbed(errorTitle, 'Member not found')
+        ],
+        flags: MessageFlags.IsComponentsV2
       });
     }
 
     if (!target.bannable) {
       return interaction.reply({
-        content: "Member can't be banned", flags: MessageFlags.Ephemeral
+        components: [
+          errorEmbed(errorTitle, "Member can't be banned")
+        ],
+        flags: MessageFlags.IsComponentsV2
       });
     }
 
